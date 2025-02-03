@@ -5,6 +5,7 @@ dotenv.config();
 
 export default {
     port: process.env.PORT || 8080,
+    secret: process.env.JWT_SECRET 
 }
 
 export const initMongoDB = async () => {

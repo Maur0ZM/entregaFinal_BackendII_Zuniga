@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { usersModel } from '../daos/mongodb/models/user.models.js';
+import { usersModel } from '../daos/mongodb/models/users.models.js';
 
 export const generateFakeUser = () => {
   return {

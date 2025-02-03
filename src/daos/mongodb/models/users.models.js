@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import { createHash } from "../../../utils/password.js";
 
 const UsersSchema = new Schema(
   {
@@ -16,10 +17,16 @@ const UsersSchema = new Schema(
       required: true,
       minlength: 6, 
     },
-    role: { type: String, required: true, trim: true, index: true },
+    role: { type: String, trim: true, index: true, default: "user" },
     age: { type: Number, required: true, min: 0 },
   },
   { timestamps: true }
 );
+
+UsersSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  this.password = createHash(this.password);
+  next();
+});
 
 export const usersModel = model("users", UsersSchema);
