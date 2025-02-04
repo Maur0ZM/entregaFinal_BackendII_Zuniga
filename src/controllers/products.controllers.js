@@ -12,7 +12,7 @@ export const getAllProducts = async (req, res, next) => {
 export const createProduct = async (req, res, next) => {
   try {
     const response = await services.createProduct(req.body);
-    res.json(response);
+    res.send(`Producto ${response.title} creado correctamente con código ${response.code}`);
   } catch (error) {
     next(error);
   }

@@ -100,11 +100,14 @@ export const login = async (req, res, next) => {
     const token = jwt.sign(payload, config.secret, { expiresIn: "24h" });
 
     res.cookie("token", token, {
-      httpOnly: true, // Evita acceso desde JavaScript en el navegador
-      secure: process.env.NODE_ENV === "production", // Solo en HTTPS en producción
-      maxAge: 24 * 60 * 60 * 1000, // Expira en 24 horas
-      sameSite: "strict", // Protege contra ataques CSRF
+      httpOnly: true, 
+      secure: process.env.NODE_ENV === "production", 
+      maxAge: 24 * 60 * 60 * 1000, 
+      sameSite: "strict", 
     });
+
+    console.log(userFind);
+    
 
     res.json({ message: "Login exitoso"});
   } catch (error) {

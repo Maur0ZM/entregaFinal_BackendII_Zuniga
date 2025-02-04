@@ -18,6 +18,6 @@ router.put('/:id', controllers.updateProduct);
 
 router.delete('/:id', controllers.deleteProduct);
 
-router.post('/create', authenticateUser, controllers.createProduct);
+router.post('/create', [authenticateUser, isAdmin], controllers.createProduct);
 
 export default router;
