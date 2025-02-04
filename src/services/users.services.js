@@ -63,4 +63,4 @@ export const findUserByEmail = async (email) => {
     } catch (error) {
       throw error;
     }
-  };
+};

@@ -8,7 +8,8 @@ const CartSchema = new Schema({
             ref: 'products',
             default: []
         }
-    ]
+    ], 
+    total: { type: Number, default: 0 },
 })
 
 CartSchema.plugin(mongoosePaginate);

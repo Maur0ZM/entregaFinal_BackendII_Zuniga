@@ -1,28 +1,29 @@
 import { Router } from "express";
 import * as controllers from '../controllers/cart.controllers.js';
+import { authenticateUser, isUser } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
 //Rutas CRUD product
 
-router.get('/', controllers.getAllCarts);
+router.get('/', [authenticateUser, isUser], controllers.getAllCarts);
 
-router.get('/:id', controllers.getById);
+router.get('/:id', [authenticateUser, isUser], controllers.getById);
 
-router.put('/:id', controllers.updateCart);
+router.put('/:id', [authenticateUser, isUser], controllers.updateCart);
 
-router.delete('/:id', controllers.deleteCart);
+router.delete('/:id', [authenticateUser, isUser], controllers.deleteCart);
 
-router.post('/', controllers.createCart);
+router.post('/', [authenticateUser, isUser], controllers.createCart);
 
-router.post('/carts/:cartId/product/:productId', controllers.addProductToCart);
+router.post('/carts/:cartId/product/:productId', [authenticateUser, isUser],controllers.addProductToCart);
 
-router.delete('/carts/:cartId/product/:productId', controllers.removeProductFromCart);
+router.delete('/carts/:cartId/product/:productId', [authenticateUser, isUser], controllers.removeProductFromCart);
 
-router.put('/carts/:cartId', controllers.updateProductFromCart);
+router.put('/carts/:cartId', [authenticateUser, isUser], controllers.updateProductFromCart);
 
-router.put('/carts/:cartId/product/:productId', controllers.updateProductFromCartC);
+router.put('/carts/:cartId/product/:productId', [authenticateUser, isUser], controllers.updateProductFromCartC);
 
-router.delete('/carts/:cartId', controllers.removeAllProductsFromCart);
+router.delete('/carts/:cartId', [authenticateUser, isUser], controllers.removeAllProductsFromCart);
   
 export default router;

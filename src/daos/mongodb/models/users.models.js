@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { createHash } from "../../../utils/password.js";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const UsersSchema = new Schema(
   {
@@ -22,6 +23,8 @@ const UsersSchema = new Schema(
   },
   { timestamps: true }
 );
+
+UsersSchema.plugin(mongoosePaginate);
 
 UsersSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();

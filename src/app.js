@@ -9,7 +9,7 @@ import cookieParser from "cookie-parser";
 import productRouter from "./routes/products.router.js"
 import usersRouter from "./routes/users.router.js"
 import cartRouter from './routes/cart.router.js';
-
+import ticketRouter from './routes/ticket.router.js';
 //Factory
 import { populateProducts } from "./factories/products.factory.js";
 import { populateUsers } from "./factories/user.factory.js";
@@ -40,6 +40,7 @@ app.use(cookieParser());
 app.use("/products", productRouter);
 app.use("/users", usersRouter);
 app.use("/api", cartRouter);
+app.use("/ticket", ticketRouter);
 
 initMongoDB()
     .then(() => {

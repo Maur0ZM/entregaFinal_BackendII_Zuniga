@@ -6,8 +6,6 @@ const router = Router();
 
 router.get('/usersRender', authenticateUser,controllers.renderUsers);
 
-router.get("/current", authenticateUser, controllers.renderUsers);
-
 router.get("/register", (req, res) => {
     res.render("register", { title: "Registro" });  
   });

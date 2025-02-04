@@ -14,9 +14,9 @@ router.get('/', controllers.getAllProducts);
 
 router.get('/:id', controllers.getById);
 
-router.put('/:id', controllers.updateProduct);
+router.put('/:id', [authenticateUser, isAdmin], controllers.updateProduct);
 
-router.delete('/:id', controllers.deleteProduct);
+router.delete('/:id', [authenticateUser, isAdmin], controllers.deleteProduct);
 
 router.post('/create', [authenticateUser, isAdmin], controllers.createProduct);
 
