@@ -1,6 +1,6 @@
 import * as services from "../services/users.services.js";
 import { isValidPassword } from "../utils/password.js";
-import jwt from 'jsonwebtoken'; 
+import jwt from "jsonwebtoken";
 import config from "../config/config.js";
 
 export const getAllUsers = async (req, res, next) => {
@@ -93,14 +93,21 @@ export const login = async (req, res, next) => {
       return res.status(401).json({ error: "Contraseña incorrecta" });
     }
     const payload = {
-        id: userFind.id,  
-        email: userFind.email,
-        role: userFind.role
+      id: userFind.id,
+      email: userFind.email,
+      role: userFind.role,
     };
-    const token = jwt.sign(payload, config.secret, { expiresIn: '24h' });
-    res.json({ message: "Login exitoso" });
+    const token = jwt.sign(payload, config.secret, { expiresIn: "24h" });
+
+    res.cookie("token", token, {
+      httpOnly: true, // Evita acceso desde JavaScript en el navegador
+      secure: process.env.NODE_ENV === "production", // Solo en HTTPS en producción
+      maxAge: 24 * 60 * 60 * 1000, // Expira en 24 horas
+      sameSite: "strict", // Protege contra ataques CSRF
+    });
+
+    res.json({ message: "Login exitoso"});
   } catch (error) {
     next(error);
   }
 };
-

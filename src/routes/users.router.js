@@ -4,7 +4,7 @@ import * as controllers from "../controllers/users.controllers.js"
 
 const router = Router();
 
-router.get('/usersRender', controllers.renderUsers);
+router.get('/usersRender', authenticateUser,controllers.renderUsers);
 
 router.get("/current", authenticateUser, controllers.renderUsers);
 
