@@ -26,4 +26,5 @@ export const isUser = (req, res, next) => {
     if (!req.user || req.user.role !== 'user') {
         return res.status(403).json({ message: "Acceso denegado, se requiere rol de usuario" });
     }
+    next();
 }

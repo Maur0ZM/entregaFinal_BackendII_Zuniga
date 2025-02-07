@@ -21,8 +21,9 @@ class CartDaoMongo {
     }
   }
 
-  async createCart(obj) {
+  async createCart(obj, userId) {
     try {
+      obj.user = userId;
       return await this.model.create(obj);
     } catch (error) {
       throw new Error(error);
@@ -31,7 +32,7 @@ class CartDaoMongo {
 
   async getById(id) {
     try {
-      return await this.model.findById(id);
+      return await this.model.findById(id).populate("products");
     } catch (error) {
       throw new Error(error);
     }

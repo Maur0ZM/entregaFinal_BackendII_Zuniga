@@ -25,5 +25,7 @@ router.put('/carts/:cartId', [authenticateUser, isUser], controllers.updateProdu
 router.put('/carts/:cartId/product/:productId', [authenticateUser, isUser], controllers.updateProductFromCartC);
 
 router.delete('/carts/:cartId', [authenticateUser, isUser], controllers.removeAllProductsFromCart);
+
+router.post('/:cartId/purchase', [authenticateUser, isUser], );
   
 export default router;

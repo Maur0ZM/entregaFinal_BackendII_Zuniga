@@ -1,6 +1,6 @@
 import { cartDao } from "../daos/mongodb/cart.dao.js";
 import { CustomError } from "../utils/error.custom.js";
-import * as productService from "./products.services.js";
+import * as prodService from "./products.services.js";
 
 export const getAllCarts = async (page, limit, first_name, sort) => {
   try {
@@ -10,11 +10,11 @@ export const getAllCarts = async (page, limit, first_name, sort) => {
   }
 };
 
-export const createCart = async (obj) => {
+export const createCart = async (obj, userId) => {
   try {
-    const product = await cartDao.createCart(obj);
-    if (!product) throw new CustomError("Error al crear producto", 400);
-    return product;
+    const cart = await cartDao.createCart(obj, userId);
+    if (!cart) throw new CustomError("Error al crear el carrito", 400);
+    return cart;
   } catch (error) {
     throw error;
   }
@@ -22,9 +22,9 @@ export const createCart = async (obj) => {
 
 export const updateCart = async (id, obj) => {
   try {
-    const product = await cartDao.updateCart(id, obj);
-    if (!product) throw new CustomError("Error al actualizar producto", 400);
-    return product;
+    const cart = await cartDao.updateCart(id, obj);
+    if (!cart) throw new CustomError("Error al actualizar el carrito", 400);
+    return cart;
   } catch (error) {
     throw error;
   }
@@ -55,10 +55,30 @@ export const getById = async (id) => {
 
 export const addProductToCart = async (cartId, productId) => {
   try {
-    await productService.getById(productId);
-    const cartUpd = await cartDao.addProductToCart(cartId, productId);
-    if (!cartUpd) throw new CustomError("Error al añadir el producto", 404);
-    return cartUpd;
+    let cart = await cartDao.getById(cartId);
+    if (!cart) throw new Error("Carrito no encontrado");
+
+    const product = await prodService.getById(productId);
+    if (!product) throw new Error("Producto no encontrado");
+
+    const productIndex = cart.products.findIndex((p) =>
+      p.productId.equals(productId)
+    );
+
+    if (productIndex !== -1) {
+      cart.products[productIndex].quantity += 1;
+    } else {
+      cart.products.push({ productId, quantity: 1 });
+    }
+
+    cart.total = cart.products.reduce(
+      (acc, p) => acc + p.quantity * product.price,
+      0
+    );
+
+    const updatedCart = await cartDao.updateCart(cartId, cart);
+
+    return updatedCart;
   } catch (error) {
     throw error;
   }
@@ -66,42 +86,79 @@ export const addProductToCart = async (cartId, productId) => {
 
 export const removeProductFromCart = async (cartId, productId) => {
   try {
-    await productService.getById(productId);
-    const cartUpd = await cartDao.removeProductFromCart(cartId, productId);
-    if (!cartUpd) throw new CustomError("Error al eliminar el producto", 404);
+    let cart = await cartDao.getById(cartId);
+    if (!cart) throw new Error("Carrito no encontrado");
+
+    const product = await prodService.getById(productId);
+    if (!product) throw new Error("Producto no encontrado");
+
+    const productIndex = cart.products.findIndex((p) =>
+      p.productId.equals(productId)
+    );
+
+    if (productIndex !== -1) {
+      if (cart.products[productIndex].quantity > 1) {
+        cart.products[productIndex].quantity -= 1; 
+      } else {
+        cart.products.splice(productIndex, 1);
+      }
+    } else {
+      throw new Error("Producto no encontrado en el carrito");
+    }
+
+    cart.total = cart.products.reduce(
+      (acc, p) => acc - product.price,
+      cart.total  
+    );
+    
+    console.log(cart.total);
+
+    if (cart.products.length === 0) {
+      cart.total = 0;
+    }
+
+    const updatedCart = await cartDao.updateCart(cartId, cart);
+
+    return updatedCart;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateProductFromCart = async (cartId, newProducts) => {
+  try {
+    const cartUpd = await cartDao.updateProductFromCart(cartId, newProducts);
+    if (!cartUpd) throw new CustomError("Error al actualizar productos", 404);
     return cartUpd;
   } catch (error) {
     throw error;
   }
 };
 
-export const updateProductFromCart = async (cartId, newProducts) =>{
+export const updateProductFromCartC = async (
+  cartId,
+  pruductId,
+  newProducts
+) => {
   try {
-    const cartUpd = await cartDao.updateProductFromCart(cartId, newProducts);
-    if(!cartUpd) throw new CustomError('Error al actualizar productos', 404);
+    const cartUpd = await cartDao.updateProductFromCartC(
+      cartId,
+      pruductId,
+      newProducts
+    );
+    if (!cartUpd) throw new CustomError("Error al actualizar productos", 404);
     return cartUpd;
   } catch (error) {
-    throw error
+    throw error;
   }
 };
-
-export const updateProductFromCartC = async (cartId, pruductId, newProducts) => {
-  try {
-    await productService.getById(pruductId)
-    const cartUpd = await cartDao.updateProductFromCartC(cartId, pruductId,newProducts);
-    if(!cartUpd) throw new CustomError('Error al actualizar productos', 404);
-    return cartUpd;
-  } catch (error) {
-    throw error
-  }
-}
 
 export const removeAllProductsFromCart = async (cartId) => {
   try {
     const cartUpd = await cartDao.removeAllProductsFromCart(cartId);
-    if(!cartUpd) throw new CustomError('Error al eliminar productos', 404);
+    if (!cartUpd) throw new CustomError("Error al eliminar productos", 404);
     return cartUpd;
   } catch (error) {
     throw error;
   }
-}
+};

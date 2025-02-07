@@ -10,3 +10,7 @@ export const createTicket = async (obj) => {
         throw error;
     }
 };
+
+export const purchaseCart = async () => {
+    
+}

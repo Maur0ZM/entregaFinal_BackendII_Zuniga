@@ -73,6 +73,20 @@ export const register = async (req, res, next) => {
       return res.status(406).json({ error: "El email ya está en uso" });
     } else {
       const newUser = await services.createUser(req.body);
+      const payload = {
+        id: newUser.id,
+        email: newUser.email,
+        role: newUser.role,
+      };
+      const token = jwt.sign(payload, config.secret, { expiresIn: "24h" });
+  
+      res.cookie("token", token, {
+        httpOnly: true, 
+        secure: process.env.NODE_ENV === "production", 
+        maxAge: 24 * 60 * 60 * 1000, 
+        sameSite: "strict", 
+      });
+      
       console.log(newUser, "Registrado correctamente");
       res.redirect("/users/usersRender");
     }
@@ -106,10 +120,9 @@ export const login = async (req, res, next) => {
       sameSite: "strict", 
     });
 
-    console.log(userFind);
+    console.log(userFind, "Logeado con exito");
     
-
-    res.json({ message: "Login exitoso"});
+    res.redirect("/users/usersRender");
   } catch (error) {
     next(error);
   }

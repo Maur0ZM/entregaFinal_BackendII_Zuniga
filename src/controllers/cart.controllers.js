@@ -30,12 +30,14 @@ export const getAllCarts = async (req, res, next) => {
 
 export const createCart = async (req, res, next) => {
   try {
-    const response = await services.createCart(req.body);
-    res.json(response);
+    const { id, email } = req.user;  
+    const cart = await services.createCart(req.body, id);  
+    res.json(`Carrito id: ${cart._id} creado correctamente para el usuario ${email} id: ${id}`);
   } catch (error) {
     next(error);
   }
 };
+
 
 export const updateCart = async (req, res, next) => {
   try {
@@ -131,3 +133,4 @@ export const removeAllProductsFromCart = async (req, res, next) => {
     next(error);
   }
 };
+
